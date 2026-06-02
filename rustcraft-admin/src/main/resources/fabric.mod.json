@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "rustcraft-admin",
+  "version": "${version}",
+  "name": "RustCraft Admin",
+  "description": "Administration planning module for moderation, observability, diagnostics, permissions, and commands.",
+  "authors": [
+    "RustCraft-Team"
+  ],
+  "contact": {
+    "homepage": "https://github.com/RustCraft-Team/rustcraft-server",
+    "sources": "https://github.com/RustCraft-Team/rustcraft-server"
+  },
+  "license": "UNLICENSED",
+  "environment": "server",
+  "depends": {
+    "fabricloader": ">=0.16.14",
+    "fabric-api": "*",
+    "fabric-language-kotlin": ">=1.13.11+kotlin.2.3.21",
+    "minecraft": "1.20.1",
+    "java": ">=21",
+    "rustcraft-api": "*"
+  }
+}

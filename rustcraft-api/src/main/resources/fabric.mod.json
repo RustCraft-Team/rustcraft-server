@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "rustcraft-api",
+  "version": "${version}",
+  "name": "RustCraft API",
+  "description": "Public contracts, events, configuration abstractions, and shared DTOs for all RustCraft modules.",
+  "authors": [
+    "RustCraft-Team"
+  ],
+  "contact": {
+    "homepage": "https://github.com/RustCraft-Team/rustcraft-server",
+    "sources": "https://github.com/RustCraft-Team/rustcraft-server"
+  },
+  "license": "UNLICENSED",
+  "environment": "server",
+  "depends": {
+    "fabricloader": ">=0.16.14",
+    "fabric-api": "*",
+    "fabric-language-kotlin": ">=1.13.11+kotlin.2.3.21",
+    "minecraft": "1.20.1",
+    "java": ">=21"
+  }
+}
