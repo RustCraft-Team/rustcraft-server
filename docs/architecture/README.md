@@ -18,6 +18,8 @@ RustCraft — серверный Fabric-проект для Minecraft Java Editi
 
 ## 3. Технологический стек
 
+The official platform baseline and compatibility policy are defined in [Target Platform](platform.md). All module build files must inherit Minecraft/Fabric dependency versions from the shared Gradle version catalog.
+
 | Область | Решение |
 | --- | --- |
 | Minecraft | Java Edition 1.20.1 |
@@ -42,6 +44,7 @@ rustcraft-server/
 ├── docs/
 │   └── architecture/
 │       ├── README.md
+│       ├── platform.md
 │       ├── rustcraft-api.md
 │       ├── domain-model.md
 │       ├── data-contracts.md
@@ -183,4 +186,5 @@ rustcraft-ui       ──X──▶ rustcraft-survival
 2. Создать ADR для event bus, configuration loader и module lifecycle.
 3. Добавить Gradle convention plugin для устранения дублирования build scripts.
 4. Добавить тест на запрет прямых зависимостей между игровыми модулями.
-5. После утверждения API начать реализацию `rustcraft-building` как первого приоритета.
+5. Поддерживать `platform.md` при любом изменении Minecraft/Fabric/Java/Gradle baseline.
+6. После утверждения API начать реализацию `rustcraft-building` как первого приоритета.

@@ -11,6 +11,7 @@ RustCraft — серверный монорепозиторий организа
 - [Domain Model](docs/architecture/domain-model.md)
 - [Data Contracts](docs/architecture/data-contracts.md)
 - [Roadmap](docs/architecture/roadmap.md)
+- [Target Platform](docs/architecture/platform.md)
 
 ## Модули
 
@@ -29,6 +30,10 @@ RustCraft — серверный монорепозиторий организа
 ## Ключевое правило зависимостей
 
 Все игровые модули зависят только от `rustcraft-api` и не импортируют классы друг друга напрямую.
+
+## Target platform
+
+RustCraft officially targets Minecraft Java Edition `1.20.1` on Fabric Loader + Fabric API, built with Java `21` and Gradle Kotlin DSL. All module build files inherit Minecraft/Fabric dependency versions from the shared Gradle version catalog; per-module platform version overrides are not supported. See [Target Platform](docs/architecture/platform.md) for the compatibility policy.
 
 ## Технологии
 

@@ -5,12 +5,14 @@
 **Цель:** подготовить монорепозиторий без игрового кода.
 
 - Создать архитектурную документацию.
-- Спроектировать структуру Gradle-монорепозитория.
+- Спроектировать структуру Gradle-монорепозитория на Gradle Kotlin DSL.
+- Зафиксировать официальную платформу: Minecraft 1.20.1, Fabric Loader, Fabric API и Java 21.
+- Централизовать Minecraft/Fabric версии в Gradle version catalog и наследовать их всеми модулями.
 - Создать базовые Fabric/Kotlin модули.
 - Зафиксировать правило: игровые модули взаимодействуют только через `rustcraft-api`.
 - Добавить JSON Schema и default JSON config для каждого модуля.
 
-**Exit criteria:** проект успешно конфигурируется Gradle, структура модулей создана, roadmap утвержден.
+**Exit criteria:** проект успешно конфигурируется Gradle, структура модулей создана, roadmap утвержден, target platform and compatibility policy documented.
 
 ## Phase 1 — API Contracts
 
