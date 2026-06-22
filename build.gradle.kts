@@ -23,6 +23,7 @@ subprojects {
             "compileOnly"(libs.fabric.api)
             "compileOnly"(libs.fabric.language.kotlin)
             "testImplementation"(libs.junit.jupiter)
+            "testRuntimeOnly"(libs.junit.platform.launcher)
         }
 
         tasks.withType<Test>().configureEach {
