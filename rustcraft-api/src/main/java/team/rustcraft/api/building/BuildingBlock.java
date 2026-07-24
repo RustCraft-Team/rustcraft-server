@@ -20,4 +20,7 @@ public interface BuildingBlock {
     PlayerId owner();
 
     WorldPosition position();
+
+    /** Applies damage and returns the amount actually removed from current health. */
+    int applyDamage(int amount);
 }

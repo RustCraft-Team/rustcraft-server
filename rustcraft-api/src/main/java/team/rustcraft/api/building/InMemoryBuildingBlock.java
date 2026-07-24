@@ -11,7 +11,7 @@ public final class InMemoryBuildingBlock implements BuildingBlock {
     private final BuildingBlockType type;
     private final BuildingGrade grade;
     private final int maxHealth;
-    private final int currentHealth;
+    private int currentHealth;
     private final PlayerId owner;
     private final WorldPosition position;
 
@@ -40,4 +40,13 @@ public final class InMemoryBuildingBlock implements BuildingBlock {
     @Override public int currentHealth() { return currentHealth; }
     @Override public PlayerId owner() { return owner; }
     @Override public WorldPosition position() { return position; }
+
+    @Override public int applyDamage(int amount) {
+        if (amount < 0) {
+            throw new IllegalArgumentException("Damage amount must not be negative");
+        }
+        int applied = Math.min(currentHealth, amount);
+        currentHealth -= applied;
+        return applied;
+    }
 }
