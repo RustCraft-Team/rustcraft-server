@@ -8,9 +8,14 @@ public enum ItemCategory {
     WEAPON,
     ARMOR,
     CONSUMABLE,
+    FOOD,
     MEDICAL,
     AMMUNITION,
     BUILDING,
+    DOOR,
+    LOCK,
+    CONTAINER,
     DEPLOYABLE,
+    VEHICLE,
     MISC
 }
