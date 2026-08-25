@@ -29,7 +29,6 @@ final class InMemoryHealthServiceTest {
         assertEquals(100, profile.currentHealth());
         assertEquals(100, profile.maxHealth());
         assertEquals(0, profile.bleedingStacks());
-        assertEquals(0, profile.radiation());
         assertEquals(250, profile.hunger());
         assertTrue(profile.alive());
         assertFalse(profile.bleeding());
@@ -103,16 +102,14 @@ final class InMemoryHealthServiceTest {
     }
 
     @Test
-    void bleedingAndRadiationDamageHealthOverTime() {
+    void bleedingDamagesHealthOverTime() {
         InMemoryHealthService service = new InMemoryHealthService(new SimpleEventBus());
         PlayerId player = player(1);
         service.createProfile(player, 100, 0, NOW);
         service.startBleeding(player, 2, NOW);
-        service.setRadiation(player, 10, NOW);
-
         HealthProfile profile = service.tick(player, NOW.plusSeconds(10));
 
-        assertEquals(95, profile.currentHealth());
+        assertEquals(96, profile.currentHealth());
     }
 
     @Test
