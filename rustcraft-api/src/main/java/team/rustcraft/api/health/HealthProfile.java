@@ -4,8 +4,8 @@ import java.time.Instant;
 import java.util.Objects;
 import team.rustcraft.api.player.PlayerId;
 
-/** Immutable health and status snapshot for a player. */
-public record HealthProfile(PlayerId playerId, double currentHealth, double maxHealth, int bleedingStacks, double radiation, double hunger, boolean alive, Instant updatedAt) {
+/** Immutable health snapshot for a player. Hunger is owned here so survival-food systems never duplicate mutable hunger state. */
+public record HealthProfile(PlayerId playerId, double currentHealth, double maxHealth, int bleedingStacks, double hunger, boolean alive, Instant updatedAt) {
     public HealthProfile {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(updatedAt, "updatedAt");
@@ -14,13 +14,12 @@ public record HealthProfile(PlayerId playerId, double currentHealth, double maxH
         }
         currentHealth = clamp(currentHealth, 0, maxHealth);
         bleedingStacks = Math.max(0, bleedingStacks);
-        radiation = Math.max(0, radiation);
         hunger = Math.max(0, hunger);
         alive = alive && currentHealth > 0;
     }
 
     public static HealthProfile create(PlayerId playerId, double maxHealth, double hunger, Instant now) {
-        return new HealthProfile(playerId, maxHealth, maxHealth, 0, 0, hunger, true, now);
+        return new HealthProfile(playerId, maxHealth, maxHealth, 0, hunger, true, now);
     }
 
     public boolean bleeding() {

@@ -13,7 +13,6 @@ import team.rustcraft.api.player.PlayerId;
 public final class InMemoryHealthService implements HealthService {
     public static final double DEFAULT_REGEN_PER_SECOND = 0.5;
     public static final double BLEED_DAMAGE_PER_STACK_PER_SECOND = 0.2;
-    public static final double RADIATION_DAMAGE_PER_POINT_PER_SECOND = 0.01;
 
     private final Map<PlayerId, HealthProfile> profiles = new LinkedHashMap<>();
     private final EventBus eventBus;
@@ -46,7 +45,7 @@ public final class InMemoryHealthService implements HealthService {
         if (amount <= 0 || !before.alive()) {
             return before;
         }
-        HealthProfile after = replace(before, HealthProfile.clamp(before.currentHealth() - amount, 0, before.maxHealth()), before.maxHealth(), before.bleedingStacks(), before.radiation(), before.hunger(), before.alive(), now);
+        HealthProfile after = replace(before, HealthProfile.clamp(before.currentHealth() - amount, 0, before.maxHealth()), before.maxHealth(), before.bleedingStacks(), before.hunger(), before.alive(), now);
         eventBus.dispatch(new DamageEvent(playerId, Math.min(amount, before.currentHealth()), source, after, now));
         if (before.alive() && !after.alive()) {
             eventBus.dispatch(new PlayerKilledEvent(playerId, source, source.attacker(), now));
@@ -61,7 +60,7 @@ public final class InMemoryHealthService implements HealthService {
             return before;
         }
         double healed = Math.min(amount, before.maxHealth() - before.currentHealth());
-        HealthProfile after = replace(before, before.currentHealth() + healed, before.maxHealth(), before.bleedingStacks(), before.radiation(), before.hunger(), true, now);
+        HealthProfile after = replace(before, before.currentHealth() + healed, before.maxHealth(), before.bleedingStacks(), before.hunger(), true, now);
         if (healed > 0) {
             eventBus.dispatch(new HealEvent(playerId, healed, after, now));
         }
@@ -74,7 +73,7 @@ public final class InMemoryHealthService implements HealthService {
         if (stacks <= 0 || !before.alive()) {
             return before;
         }
-        HealthProfile after = replace(before, before.currentHealth(), before.maxHealth(), before.bleedingStacks() + stacks, before.radiation(), before.hunger(), true, now);
+        HealthProfile after = replace(before, before.currentHealth(), before.maxHealth(), before.bleedingStacks() + stacks, before.hunger(), true, now);
         eventBus.dispatch(new BleedingStartedEvent(playerId, stacks, after.bleedingStacks(), now));
         return after;
     }
@@ -85,21 +84,15 @@ public final class InMemoryHealthService implements HealthService {
         if (!before.bleeding()) {
             return before;
         }
-        HealthProfile after = replace(before, before.currentHealth(), before.maxHealth(), 0, before.radiation(), before.hunger(), before.alive(), now);
+        HealthProfile after = replace(before, before.currentHealth(), before.maxHealth(), 0, before.hunger(), before.alive(), now);
         eventBus.dispatch(new BleedingStoppedEvent(playerId, before.bleedingStacks(), now));
         return after;
     }
 
     @Override
-    public synchronized HealthProfile setRadiation(PlayerId playerId, double radiation, Instant now) {
-        HealthProfile before = requireProfile(playerId);
-        return replace(before, before.currentHealth(), before.maxHealth(), before.bleedingStacks(), Math.max(0, radiation), before.hunger(), before.alive(), now);
-    }
-
-    @Override
     public synchronized HealthProfile setHunger(PlayerId playerId, double hunger, Instant now) {
         HealthProfile before = requireProfile(playerId);
-        return replace(before, before.currentHealth(), before.maxHealth(), before.bleedingStacks(), before.radiation(), Math.max(0, hunger), before.alive(), now);
+        return replace(before, before.currentHealth(), before.maxHealth(), before.bleedingStacks(), Math.max(0, hunger), before.alive(), now);
     }
 
     @Override
@@ -109,23 +102,23 @@ public final class InMemoryHealthService implements HealthService {
         if (seconds == 0 || !before.alive()) {
             return before;
         }
-        double environmentalDamage = seconds * ((before.bleedingStacks() * BLEED_DAMAGE_PER_STACK_PER_SECOND) + (before.radiation() * RADIATION_DAMAGE_PER_POINT_PER_SECOND));
+        double environmentalDamage = seconds * before.bleedingStacks() * BLEED_DAMAGE_PER_STACK_PER_SECOND;
         HealthProfile after = before;
         if (environmentalDamage > 0) {
-            after = applyTickDamage(before, environmentalDamage, new SimpleDamageSource(before.radiation() > 0 ? DamageType.RADIATION : DamageType.MELEE, "status"), now);
+            after = applyTickDamage(before, environmentalDamage, new SimpleDamageSource(DamageType.MELEE, "bleeding"), now);
         }
         if (after.alive() && after.hunger() > 0 && after.currentHealth() < after.maxHealth()) {
             double healed = Math.min(seconds * DEFAULT_REGEN_PER_SECOND, after.maxHealth() - after.currentHealth());
-            after = replace(after, after.currentHealth() + healed, after.maxHealth(), after.bleedingStacks(), after.radiation(), after.hunger(), true, now);
+            after = replace(after, after.currentHealth() + healed, after.maxHealth(), after.bleedingStacks(), after.hunger(), true, now);
             eventBus.dispatch(new HealEvent(playerId, healed, after, now));
         } else if (after == before) {
-            after = replace(before, before.currentHealth(), before.maxHealth(), before.bleedingStacks(), before.radiation(), before.hunger(), before.alive(), now);
+            after = replace(before, before.currentHealth(), before.maxHealth(), before.bleedingStacks(), before.hunger(), before.alive(), now);
         }
         return after;
     }
 
     private HealthProfile applyTickDamage(HealthProfile before, double amount, DamageSource source, Instant now) {
-        HealthProfile after = replace(before, before.currentHealth() - amount, before.maxHealth(), before.bleedingStacks(), before.radiation(), before.hunger(), before.alive(), now);
+        HealthProfile after = replace(before, before.currentHealth() - amount, before.maxHealth(), before.bleedingStacks(), before.hunger(), before.alive(), now);
         eventBus.dispatch(new DamageEvent(before.playerId(), Math.min(amount, before.currentHealth()), source, after, now));
         if (before.alive() && !after.alive()) {
             eventBus.dispatch(new PlayerKilledEvent(before.playerId(), source, Optional.empty(), now));
@@ -133,8 +126,8 @@ public final class InMemoryHealthService implements HealthService {
         return after;
     }
 
-    private HealthProfile replace(HealthProfile before, double currentHealth, double maxHealth, int bleedingStacks, double radiation, double hunger, boolean alive, Instant now) {
-        HealthProfile profile = new HealthProfile(before.playerId(), currentHealth, maxHealth, bleedingStacks, radiation, hunger, alive, now);
+    private HealthProfile replace(HealthProfile before, double currentHealth, double maxHealth, int bleedingStacks, double hunger, boolean alive, Instant now) {
+        HealthProfile profile = new HealthProfile(before.playerId(), currentHealth, maxHealth, bleedingStacks, hunger, alive, now);
         profiles.put(before.playerId(), profile);
         return profile;
     }
